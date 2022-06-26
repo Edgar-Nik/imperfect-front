@@ -1,5 +1,9 @@
 {
   "name": "imperfect-app",
+  "engines" : { 
+    "npm" : ">=8.0.0",
+    "node" : ">=16.0.0"
+  },
   "version": "0.1.0",
   "private": true,
   "dependencies": {
