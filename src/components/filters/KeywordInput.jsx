@@ -15,6 +15,7 @@ export default function KeywordInput({
   handleChange,
   disabled,
   isAdmin,
+  pickedItemWidth,
 }) {
   const [inputValue, setInputValue] = useState("");
   const [inputValueMultilang, setInputValueMultilang] = useState({
@@ -188,12 +189,14 @@ export default function KeywordInput({
       ) : (
         <Box>
           <FormControl variant="outlined" fullWidth>
-            <InputLabel
-              style={{ background: "#000", paddingRight: "5px" }}
-              htmlFor="outlined-adornment-keyword"
-            >
-              {filterItem.title}
-            </InputLabel>
+            {filterItem.title && (
+              <InputLabel
+                style={{ background: "#000", paddingRight: "5px" }}
+                htmlFor="outlined-adornment-keyword"
+              >
+                {filterItem.title}
+              </InputLabel>
+            )}
             <OutlinedInput
               value={inputValue}
               onChange={(e) => {
@@ -216,13 +219,14 @@ export default function KeywordInput({
                   </Box>
                 </InputAdornment>
               }
-              label="Keyword"
+              label={filterItem.title ?? undefined}
             />
           </FormControl>
           {!!value?.length && (
             <Box display={"flex"} flexWrap={"wrap"} width={"100%"} marginY={2}>
               {value.map((item, idx) => (
                 <PickedItem
+                  pickedItemWidth={pickedItemWidth}
                   key={item + idx}
                   label={item}
                   handleRemove={() => removeItem(idx)}

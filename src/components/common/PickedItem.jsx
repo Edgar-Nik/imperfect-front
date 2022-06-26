@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import React from "react";
 
-export default function PickedItem({ label, handleRemove }) {
+export default function PickedItem({ label, handleRemove, pickedItemWidth }) {
   return (
     <Box
       border={"0.5px solid rgba(255,255,255,0.5)"}
@@ -13,7 +13,8 @@ export default function PickedItem({ label, handleRemove }) {
       borderRadius={1}
       marginRight={1}
       marginBottom={1}
-      maxWidth={"130px"}
+      maxWidth={pickedItemWidth ? `${pickedItemWidth}px` : "130px"}
+      width={"100%"}
     >
       <span
         style={{

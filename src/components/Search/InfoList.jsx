@@ -82,12 +82,18 @@ export default function InfoList({ current }) {
       )}
       {current.other_details?.length > 0 && (
         <p className="info-item">
-          other details: {current.other_details.join(", ")}
+          other details:{" "}
+          {current.other_details
+            .map((item) => t.other_details["en"][item])
+            .join(", ")}
         </p>
       )}
       {current.special_skills?.length > 0 && (
         <p className="info-item">
-          special skills: {current.special_skills.join(", ")}
+          special skills:{" "}
+          {current.special_skills
+            .map((item) => t.special_skills["en"][item])
+            .join(", ")}
         </p>
       )}
       {current.experience?.length > 0 && (

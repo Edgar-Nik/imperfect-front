@@ -5,15 +5,22 @@ import filtersJson from "../utils/filters";
 import { useRef } from "react";
 import { parseUrlCategory } from "./Search";
 import AdminFilterItem from "../components/filters/AdminFilterItem";
-import { createSpecialist } from "../services/specialists";
+import { createSpecialist, updateSpecialist } from "../services/specialists";
+import MediaAddForm from "../components/forms/MediaAddForm";
+import SpinnerLoader from "../components/common/SpinnerLoader";
+import { useDispatch } from "react-redux";
+import { setSuccessAllert, setErrorAllert } from "../store/alertReducer";
 
 const AdminAdd = () => {
+  const dispatch = useDispatch();
   const filterObject = useRef(filtersJson[parseUrlCategory("filmmakers")]);
   const [category, setCategory] = useState("filmmakers");
   const [filters, setFilters] = useState(filterObject.filters);
   const [nestedFilters, setNestedFilters] = useState({});
   const [picked, setPicked] = useState({});
   const [fullName, setFullName] = useState({ en: "", am: "" });
+  const [loading, setLoading] = useState(false);
+  const [currentId, setCurrentId] = useState(1);
 
   const resetAll = () => {
     setNestedFilters({});
@@ -67,6 +74,7 @@ const AdminAdd = () => {
 
   const handleAdd = async () => {
     try {
+      setLoading(true);
       const data = { ...picked };
       if (data.age) {
         data.date_of_birth = data.age;
@@ -76,8 +84,27 @@ const AdminAdd = () => {
         ...data,
         full_name: fullName,
       });
+      setCurrentId(resp._id);
     } catch (error) {
       console.log(error);
+      dispatch(setErrorAllert("Something went wrong!"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdate = async (data) => {
+    if (currentId) {
+      try {
+        setLoading(true);
+        const resp = await updateSpecialist(category, currentId, data);
+        dispatch(setSuccessAllert("Successfully saved!"));
+      } catch (error) {
+        console.log(error);
+        dispatch(setErrorAllert("Something went wrong!"));
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -103,72 +130,92 @@ const AdminAdd = () => {
       >
         Add Specialist
       </Typography>
-      {filters && (
-        <Stack spacing={2}>
-          <SinglePick
-            filterItem={{
-              title: "Category",
-              values: [
-                { key: "filmmakers", label: "filmmakers" },
-                { key: "performers", label: "performing artists" },
-                { key: "production-managers", label: "production crew" },
-                { key: "fine-arts", label: "fine arts" },
-                { key: "musicians", label: "musicians" },
-                { key: "designers", label: "designers" },
-              ],
-            }}
-            value={category}
-            handleChange={(e) => {
-              setCategory(e);
-            }}
-          />
-          <TextField
-            label="Full name (EN)"
-            value={fullName.en}
-            onChange={(e) => setFullName({ ...fullName, en: e.target.value })}
-          />
-          <TextField
-            label="Full name (AM)"
-            value={fullName.am}
-            onChange={(e) => setFullName({ ...fullName, am: e.target.value })}
-          />
-          {Object.entries(filters).map((item, idx) => (
-            <Box key={idx}>
-              <AdminFilterItem
-                filterItem={item[1]}
-                value={picked[item[0]]}
-                key={item[0]}
-                handleChange={(args) => {
-                  handleChange(item[0], args);
-                }}
-                handlePickNested={(args, nesteds) => {
-                  handleChangeNested(item[0], args, nesteds);
-                }}
-              />
-            </Box>
-          ))}
-          {Object.entries(nestedFilters).map((item, idx) => (
-            <Box key={idx}>
-              <AdminFilterItem
-                filterItem={item[1]}
-                value={picked[item[0]]}
-                key={item[0]}
-                handleChange={(args) => {
-                  handleChange(item[0], args);
-                }}
-                handlePickNested={() => {}}
-              />
-            </Box>
-          ))}
-        </Stack>
-      )}
-      <Button
-        variant="contained"
-        sx={{ marginTop: "24px" }}
-        onClick={handleAdd}
-      >
-        Submit
-      </Button>
+      <div>
+        {!currentId ? (
+          <div>
+            {filters && (
+              <Stack spacing={2}>
+                <SinglePick
+                  filterItem={{
+                    title: "Category",
+                    values: [
+                      { key: "filmmakers", label: "filmmakers" },
+                      { key: "performers", label: "performing artists" },
+                      { key: "production-managers", label: "production crew" },
+                      { key: "fine-arts", label: "fine arts" },
+                      { key: "musicians", label: "musicians" },
+                      { key: "designers", label: "designers" },
+                    ],
+                  }}
+                  value={category}
+                  handleChange={(e) => {
+                    setCategory(e);
+                  }}
+                />
+                <TextField
+                  label="Full name (EN)"
+                  value={fullName.en}
+                  onChange={(e) =>
+                    setFullName({ ...fullName, en: e.target.value })
+                  }
+                />
+                <TextField
+                  label="Full name (AM)"
+                  value={fullName.am}
+                  onChange={(e) =>
+                    setFullName({ ...fullName, am: e.target.value })
+                  }
+                />
+                {Object.entries(filters).map((item, idx) => (
+                  <Box key={idx}>
+                    <AdminFilterItem
+                      filterItem={item[1]}
+                      value={picked[item[0]]}
+                      key={item[0]}
+                      handleChange={(args) => {
+                        handleChange(item[0], args);
+                      }}
+                      handlePickNested={(args, nesteds) => {
+                        handleChangeNested(item[0], args, nesteds);
+                      }}
+                    />
+                  </Box>
+                ))}
+                {Object.entries(nestedFilters).map((item, idx) => (
+                  <Box key={idx}>
+                    <AdminFilterItem
+                      filterItem={item[1]}
+                      value={picked[item[0]]}
+                      key={item[0]}
+                      handleChange={(args) => {
+                        handleChange(item[0], args);
+                      }}
+                      handlePickNested={() => {}}
+                    />
+                  </Box>
+                ))}
+                <Button
+                  variant="contained"
+                  sx={{ marginTop: "24px" }}
+                  onClick={handleAdd}
+                  disabled={loading}
+                >
+                  {loading ? <SpinnerLoader size={20} /> : "Next"}
+                </Button>
+              </Stack>
+            )}
+          </div>
+        ) : (
+          <div>
+            <MediaAddForm
+              currentId={currentId}
+              category={category}
+              handleAddMedia={handleUpdate}
+              loading={loading}
+            />
+          </div>
+        )}
+      </div>
     </Box>
   );
 };

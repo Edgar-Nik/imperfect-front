@@ -12,7 +12,6 @@ const langs = [
   { code: "av", name: "Avaric", nativeName: "авар мацӀ, магӀарул мацӀ" },
   { code: "ae", name: "Avestan", nativeName: "avesta" },
   { code: "ay", name: "Aymara", nativeName: "aymar aru" },
-  { code: "az", name: "Azerbaijani", nativeName: "azərbaycan dili" },
   { code: "bm", name: "Bambara", nativeName: "bamanankan" },
   { code: "ba", name: "Bashkir", nativeName: "башҡорт теле" },
   { code: "eu", name: "Basque", nativeName: "euskara, euskera" },

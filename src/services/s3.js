@@ -1,12 +1,8 @@
-import { instance } from "./axios";
 import axios from "axios";
+import { instance } from "./axios";
 
-export const createSpecialist = async (category, specialistData) => {
-  const response = await instance().post(`/${category}`, specialistData);
-  return response.data;
-};
-export const updateSpecialist = async (category, id, specialistData) => {
-  const response = await instance().put(`/${category}/${id}`, specialistData);
+export const getUploadUrl = async () => {
+  const response = await instance().get(`/s3`);
   return response.data;
 };
 
@@ -15,10 +11,11 @@ export const uploadImages = async (id, category, files) => {
   for (let item of files) {
     data.append("images", item);
   }
+  data.append("type", "image");
 
   var config = {
     method: "post",
-    url: `${process.env.REACT_APP_API_BASE_URL}/api/${category}/image/${id}`,
+    url: `${process.env.REACT_APP_API_BASE_URL}/api/s3/${category}/${id}`,
     headers: {
       "Content-Type": "application/json",
     },
@@ -30,15 +27,15 @@ export const uploadImages = async (id, category, files) => {
   return response.data;
 };
 
-export const uploadGif = async (id, category, files) => {
+export const uploadGif = async (id, files) => {
   var data = new FormData();
   for (let item of files) {
     data.append("images", item);
   }
-
+  data.append("type", "gif");
   var config = {
     method: "post",
-    url: `${process.env.REACT_APP_API_BASE_URL}/api/${category}/gif/${id}`,
+    url: `${process.env.REACT_APP_API_BASE_URL}/api/s3/${id}`,
     headers: {
       "Content-Type": "application/json",
     },
