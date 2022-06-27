@@ -5,7 +5,6 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 
 export default function DateInput({ filterItem, value, handleChange }) {
-  console.log(value);
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <FormControl fullWidth>

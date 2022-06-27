@@ -18,7 +18,7 @@ export const uploadImages = async (id, category, files) => {
 
   var config = {
     method: "post",
-    url: `${process.env.REACT_APP_API_BASE_URL}/api/${category}/image/${id}`,
+    url: `${process.env.REACT_APP_API_BASE_URL}/api/${category}/images/${id}`,
     headers: {
       "Content-Type": "application/json",
     },

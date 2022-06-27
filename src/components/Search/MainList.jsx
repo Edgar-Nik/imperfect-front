@@ -4,6 +4,7 @@ import PlayIcon from "../common/PlayIcon";
 import YoutubeEmbed from "../common/YoutubeEmbed";
 import Modal from "../modal/modal";
 import InfoList from "./InfoList";
+const IMAGE_SRC = "https://imperfect-direct-upload-s3.s3.amazonaws.com/";
 
 export default function MainList({ list }) {
   const [current, setCurrent] = useState(null);
@@ -39,9 +40,19 @@ export default function MainList({ list }) {
             className={item.gif ? "user-card has-gif" : "user-card"}
             onClick={() => handlePick(item)}
           >
-            <img loading="lazy" src={item.image} alt="" className="image" />
+            <img
+              loading="lazy"
+              src={item.image && IMAGE_SRC + item.image}
+              alt=""
+              className="image"
+            />
             {item.gif && (
-              <img loading="lazy" src={item.gif} className="gif" alt="" />
+              <img
+                loading="lazy"
+                src={IMAGE_SRC + item.gif}
+                className="gif"
+                alt=""
+              />
             )}
           </div>
         ))}
@@ -50,13 +61,13 @@ export default function MainList({ list }) {
           <div className="specialist-info">
             <div className="images">
               <div className="main-image">
-                <img src={current.image} alt="" />
+                <img src={current.image && IMAGE_SRC + current.image} alt="" />
               </div>
               <div className="rest-images">
                 {current.images?.length > 0 &&
                   current.images.slice(0, 3).map((image, idx) => (
                     <div key={"image" + idx} className="image-wrapper">
-                      <img src={image} alt="" />
+                      <img src={IMAGE_SRC + image} alt="" />
 
                       {current.images.length > 3 && (
                         <div className="rest-count">

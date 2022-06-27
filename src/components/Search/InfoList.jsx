@@ -14,7 +14,9 @@ export default function InfoList({ current }) {
   }
   return (
     <div className="info-list">
-      {current.specialist && <p className="info-item">{current.specialist}</p>}
+      {current.specialist && (
+        <p className="info-item">{t.specialist["en"][current.specialist]}</p>
+      )}
       {current.date_of_birth && (
         <p className="info-item">age: {getAge(current.date_of_birth)}</p>
       )}
@@ -32,7 +34,10 @@ export default function InfoList({ current }) {
       )}
       {current.specialized_in && current.specialized_in.length > 0 && (
         <p className="info-item">
-          specialised in: {current.specialized_in["en"].join(", ")}
+          specialised in:{" "}
+          {current.specialized_in
+            .map((item) => t.specialized_in["en"][item])
+            .join(", ")}
         </p>
       )}
       {current.specialized_in_multilang &&

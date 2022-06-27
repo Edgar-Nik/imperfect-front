@@ -20,7 +20,7 @@ const AdminAdd = () => {
   const [picked, setPicked] = useState({});
   const [fullName, setFullName] = useState({ en: "", am: "" });
   const [loading, setLoading] = useState(false);
-  const [currentId, setCurrentId] = useState(1);
+  const [currentId, setCurrentId] = useState("");
 
   const resetAll = () => {
     setNestedFilters({});

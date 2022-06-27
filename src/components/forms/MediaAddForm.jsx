@@ -1,18 +1,25 @@
 import { Button, Stack, FormControl, Typography, Box } from "@mui/material";
 import React, { useState } from "react";
-import { getUploadUrl } from "../../services/s3";
-import { uploadGif, uploadImages } from "../../services/specialists";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {
+  updateSpecialist,
+  uploadGif,
+  uploadImages,
+} from "../../services/specialists";
+import { setErrorAllert, setSuccessAllert } from "../../store/alertReducer";
 import SpinnerLoader from "../common/SpinnerLoader";
 import KeywordInput from "../filters/KeywordInput";
 
 export default function MediaAddForm({ currentId, category, loading }) {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [images, setImages] = useState(null);
-  const [image, setImage] = useState(null);
   const [videos, setVideos] = useState(null);
   const [imageLoading, setImageLoading] = useState(false);
   const [gif, setGif] = useState("");
   const [previews, setPreviews] = useState([]);
-  const [gifPreview, setGifPreview] = useState(null);
+  const [gifPreview, setGifPreview] = useState([]);
 
   const handleChangeImages = (e) => {
     const fileObj = [];
@@ -26,31 +33,35 @@ export default function MediaAddForm({ currentId, category, loading }) {
     setPreviews(fileArray);
   };
 
+  const handleChangeGif = (e) => {
+    const fileObj = [];
+    const fileArray = [];
+    fileObj.push(e.target.files);
+    for (let i = 0; i < fileObj[0].length; i++) {
+      fileArray.push(URL.createObjectURL(fileObj[0][i]));
+    }
+
+    setGif(fileObj);
+    setGifPreview(fileArray);
+  };
   const handleSubmit = async () => {
-    // let data;
-    // if (videos?.length) {
-    //   data = { videos: videos };
-    // }
-    // if (image) {
-    //   data = data ? { ...data, image: image } : { image: image };
-    // }
-    // if (images?.length) {
-    //   data = data ? { ...data, images: images } : { images: images };
-    // }
-    // handleAddMedia(data);
     try {
       setImageLoading(true);
-
       if (images && images[0]) {
         await uploadImages(currentId, category, images[0]);
         setImages(null);
       }
-      if (gif && gif[0]) {
+      if (gif) {
         await uploadGif(currentId, category, gif[0]);
         setGif(null);
       }
+      if (videos?.length) {
+        await updateSpecialist(category, currentId, { videos: videos });
+      }
+      dispatch(setSuccessAllert("Successfully saved!"));
+      navigate(`/search/${category}`);
     } catch (e) {
-      console.log(e);
+      dispatch(setErrorAllert("Something went wrong!"));
     } finally {
       setImageLoading(false);
     }
@@ -97,9 +108,31 @@ export default function MediaAddForm({ currentId, category, loading }) {
         </Typography>
         <Button variant="outlined" component="label">
           Upload GIF
-          <input type="file" accept="image/gif" hidden />
+          <input
+            onChange={(e) => handleChangeGif(e)}
+            type="file"
+            accept="image/gif"
+            hidden
+          />
         </Button>
       </FormControl>
+      {gifPreview && (
+        <Box sx={{ width: "100%", display: "flex", flexWrap: "wrap" }}>
+          {gifPreview.map((image, idx) => (
+            <img
+              style={{
+                width: "90px",
+                height: "90px",
+                objectFit: "contain",
+                marginRight: "10px",
+                marginBottom: "10px",
+              }}
+              key={idx}
+              src={image}
+            />
+          ))}
+        </Box>
+      )}
       <FormControl fullWidth>
         <Typography sx={{ marginBottom: "8px" }} variant="subtitle1">
           Youtube Videos
